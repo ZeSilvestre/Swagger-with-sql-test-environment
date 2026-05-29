@@ -148,7 +148,13 @@ mvn spring-boot:run
 Swagger UI:
 
 ```text
-http://localhost:8080/api/v1/swagger-ui.html
+http://localhost:8080/swagger-ui/index.html
+```
+
+Documentacao OpenAPI:
+
+```text
+http://localhost:8080/api/v1/api-docs
 ```
 
 Health check:

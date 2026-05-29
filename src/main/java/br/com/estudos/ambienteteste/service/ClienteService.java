@@ -3,6 +3,7 @@ package br.com.estudos.ambienteteste.service;
 import org.springframework.stereotype.Service;
 
 import br.com.estudos.ambienteteste.domain.entity.Cliente;
+import br.com.estudos.ambienteteste.domain.entity.Endereco;
 import br.com.estudos.ambienteteste.exception.BusinessException;
 import br.com.estudos.ambienteteste.exception.ResourceNotFoundException;
 import br.com.estudos.ambienteteste.mapper.ClienteMapper;
@@ -33,9 +34,45 @@ public class ClienteService {
     return clienteRepository.save(clienteMapper.toEntity(request));
   }
 
+  public Cliente update(Long id, ClienteRequest request) {
+    Cliente cliente = findById(id);
+
+    // Dados do cliente que são atualizáveis
+
+    cliente.setNome(request.nome());
+    cliente.setEmail(request.email());
+    cliente.setTelefone(request.telefone());
+
+    if (request.endereco() != null) {
+      Endereco endereco = cliente.getEndereco() != null ? cliente.getEndereco() : new Endereco();
+      endereco.setLogradouro(request.endereco().logradouro());
+      endereco.setNumero(request.endereco().numero());
+      endereco.setComplemento(request.endereco().complemento());
+      endereco.setBairro(request.endereco().bairro());
+      endereco.setCidade(request.endereco().cidade());
+      endereco.setEstado(request.endereco().estado());
+      endereco.setCep(request.endereco().cep());
+
+      cliente.setEndereco(endereco);
+    }
+
+    return clienteRepository.save(cliente);
+  }
+
+  public void delete(Long id) {
+    Cliente cliente = findById(id);
+    clienteRepository.delete(cliente);
+  }
+
   public Cliente findByCpf(String cpf) {
     return clienteRepository
         .findByCpf(cpf)
+        .orElseThrow(() -> new ResourceNotFoundException("Cliente não encontrado"));
+  }
+
+  public Cliente findById(Long id) {
+    return clienteRepository
+        .findById(id)
         .orElseThrow(() -> new ResourceNotFoundException("Cliente não encontrado"));
   }
 }

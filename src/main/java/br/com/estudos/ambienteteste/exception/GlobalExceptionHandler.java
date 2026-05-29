@@ -12,9 +12,11 @@ import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.ErrorResponseException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.servlet.NoHandlerFoundException;
 
-@RestControllerAdvice
+@RestControllerAdvice(annotations = RestController.class)
 public class GlobalExceptionHandler {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(GlobalExceptionHandler.class);
@@ -85,6 +87,12 @@ public class GlobalExceptionHandler {
     String message = exception.getBody().getDetail();
 
     return buildResponse(status, message, request);
+  }
+
+  @ExceptionHandler(NoHandlerFoundException.class)
+  public ResponseEntity<ErrorResponse> handleNoHandlerFound(
+      NoHandlerFoundException exception, HttpServletRequest request) {
+    return buildResponse(HttpStatus.NOT_FOUND, "Recurso nao encontrado.", request);
   }
 
   @ExceptionHandler(Exception.class)
